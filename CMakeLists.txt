@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(NeuronNet-master) 
+project(NeuronNet) 
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
@@ -12,7 +12,7 @@ option(test "Build tests." ON)
 include_directories("/usr/local/include" ${CMAKE_SOURCE_DIR}/include)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-add_executable(NeuronNet-master src/main.cpp src/random.cpp src/network.cpp src/neuron.cpp src/simulation.cpp)
+add_executable(NeuronNet src/main.cpp src/random.cpp src/network.cpp src/neuron.cpp src/simulation.cpp)
 
 if (test)
   enable_testing()
@@ -24,7 +24,7 @@ if (test)
   include_directories(${GTEST_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/src)
   add_executable(testNeuronNet src/test_main.cpp src/random.cpp src/network.cpp src/neuron.cpp src/simulation.cpp)
   target_link_libraries(testNeuronNet ${GTEST_BOTH_LIBRARIES} pthread)
-  add_test(NeuronNet-master testNeuronNet)
+  add_test(NeuronNet testNeuronNet)
 endif(test)
 
 find_package(Doxygen)
