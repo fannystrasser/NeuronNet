@@ -128,3 +128,113 @@ void Network::print_traj(const int time, const std::map<std::string, size_t> &_n
             }
     (*_out) << std::endl;
 }
+
+
+
+
+
+
+
+
+std::pair<size_t, double> Network::degree(const size_t& n) const {
+	double intensities (0.0); 
+	size_t connections (0); 
+	linkmap::const_iterator itmin = links.lower_bound({n, 0});
+	linkmap::const_iterator itmax = links.lower_bound({n+1, 0}) ; 
+	for ( ; itmin->first != itmax->first ;  ++ itmin) {
+		
+		intensities = intensities + itmin->second; 
+		++connections; 
+		
+	}
+		
+	
+	std::pair<size_t, double>deg (connections, intensities) ;
+	return deg;
+	
+}
+
+
+
+
+
+
+  std::set<size_t> Network::step(const std::vector<double>& thalamique) {
+	  
+	  std::set<size_t> firing_neurons; 
+	  for (size_t i(0) ; i<neurons.size() ; ++i) {
+		  if (neurons[i].firing()) {
+			  firing_neurons.insert(i); 
+			  neurons[i].reset();
+		  }
+	  }
+	  
+	 if (thalamique.size() == neurons.size() ) {
+		 
+		 std::vector<double>input_t; 
+		 for (size_t i(0) ; i<neurons.size() ; ++ i ) {
+			 double input_thalam (thalamique[i]); 
+			 if (neurons[i].is_inhibitory()) {
+				 input_thalam = 0.4* input_thalam; 
+			 }
+			 input_t.push_back(input_thalam); 
+		 }
+		 
+		 std::vector<double>input; 
+		 for (size_t i(0) ; i<neurons.size() ; ++i ) {
+			 std::vector<std::pair<size_t, double >> voisins(neighbors(i)); 
+			 double somme_inhib (0); 
+			 double somme (0); 
+			 for (size_t j(0); j<voisins.size(); ++j ) {
+				if (neurons[voisins[j].first].firing()) {
+					if (neurons[voisins[j].first].is_inhibitory()) {
+						somme_inhib = somme_inhib + voisins[j].second; 
+					} else {
+						somme = somme + voisins[j].second; 
+						} 
+			
+					}
+				}
+				input.push_back(input_t[i] + 0.5*somme-somme_inhib );
+			}
+			
+			
+			for (size_t i(0) ; i<neurons.size() ; ++i ) {
+				neurons[i].input(input[i]); 
+				neurons[i].step();
+			}	  
+	  }
+	  return firing_neurons; 
+	  
+	  
+  }
+
+
+
+
+
+
+
+
+
+
+
+std::vector<std::pair<size_t, double> > Network::neighbors(const size_t& n) const {
+	
+	std::vector<std::pair<size_t, double>> voisins; 
+	linkmap::const_iterator itmin = links.lower_bound({n, 0});
+	linkmap::const_iterator itmax = links.lower_bound({n+1, 0}) ; 
+	for (  ; itmin->first != itmax->first ;  ++ itmin) {
+		std::pair <size_t, double> voisin (itmin->first.second, itmin->second ); 
+		voisins.push_back(voisin); 
+	
+}
+		
+	
+return voisins; 
+}
+	
+	
+	
+	
+

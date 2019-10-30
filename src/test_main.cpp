@@ -62,6 +62,7 @@ TEST(networkTest, initialize) {
     EXPECT_NEAR(-0.2*_REST_VAL_*_BVAR_*sqrt(0.194), sdv, 1.5e-1);
 }
 
+
 TEST(networkTest, connect) {
     bool trylink = net.add_link(0, 0, 10);
     EXPECT_FALSE(trylink);
@@ -80,6 +81,7 @@ TEST(networkTest, connect) {
             && net.add_link(excit_idx, inhib_idx, stren))
             nlink--;
     EXPECT_EQ(expec, net.degree(excit_idx));
+    
     std::vector<double> noisev(nlinks, noise);
     size_t inhib1 = net.neighbors(excit_idx).front().first;
     int ifirs(0), efirs(0);
@@ -96,7 +98,7 @@ TEST(networkTest, connect) {
     EXPECT_DOUBLE_EQ(noise,    net.neuron(excit_idx).input());
     EXPECT_DOUBLE_EQ(.4*noise, net.neuron(inhib1).input());
 }
-
+ 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
